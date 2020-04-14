@@ -1,4 +1,5 @@
 from prettytable import PrettyTable
+from tabulate import tabulate
 
  # сортировка по мат ожиданию (по возрастанию)
 def sortByME(outData):
@@ -14,23 +15,19 @@ def viewPositions(arrayPosit):
         for el in arr1:
             posit += str(el)+', '
         posit = posit[:len(posit)-2]
-        strOr = ' или '
+        strOr = '\nили\n'
     return posit
 
 
  # вывод результатов в виде таблицы
 def transmitData(outData):
-    columnNames = ['Среднее кол-во отключаемых потребителей',
-                   'Кол-во устанавливаемых КА',
+    columnNames = ['Среднее количество\nотключаемых потребителей',
+                   'Количество\nустанавливаемых КА',
                    'Места для установки']
 
-    columns = len(columnNames)
-    table = PrettyTable(columnNames)
     arrayOutData = []
     for nKA in sortByME(outData):
-        arrayOutData.append(round(nKA[0], 2))
-        arrayOutData.append(nKA[1])
-        arrayOutData.append(viewPositions(nKA[2]))
-        table.add_row(arrayOutData)
-        arrayOutData.clear()
-    print(table)
+        arrayOutData.append((round(nKA[0], 2), nKA[1], viewPositions(nKA[2])))
+
+    print()
+    print(tabulate(arrayOutData, headers=columnNames,tablefmt='grid',colalign=("center", "center", "center")))

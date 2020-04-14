@@ -52,8 +52,8 @@ def functProtectConsumer(dictAmountConsumer):
                          3: dictAmountConsumer[0], 4: 0,
                          5: dictAmountConsumer[2], 6: 0,
                          7: dictAmountConsumer[1], 8: 0,
-                         9: 0,                    10: 0,
-                         11: 0,                     12: dictAmountConsumer[7],
+                         9: 0, 10: 0,
+                         11: 0, 12: dictAmountConsumer[7],
                          13: dictAmountConsumer[6], 14: dictAmountConsumer[5],
                          15: dictAmountConsumer[4], 16: dictAmountConsumer[3],
                          17: dictAmountConsumer[9], 18: dictAmountConsumer[8]
@@ -118,16 +118,17 @@ def lineProtect(dependLines, dictProtectLines):
 
  # рассчитывается количество линий, влияющих на функционирование КА на соответсвующей позиции
 def lineInfluence(positions, protectLines, matrixLine=matrixGraph):
-    arrayInfl = []
-    arrayInfl.append(protectLines[0])
-    for i in range(1, len(positions)):
-        for j in range(i):
-            row = positions[i-j-1] - 1
-            col = positions[i] - 1
-            if matrixLine[row][col] == 1:  # если линии зависимы, то
-                arrayInfl.append(protectLines[i] + arrayInfl[i-j-1])
-                break
-    arrayInfl[0] = AMOUNT_LINES
+    #arrayInfl = []
+    #arrayInfl.append(protectLines[0])
+    #for i in range(1, len(positions)):
+    #    for j in range(i):
+    #        row = positions[i-j-1] - 1
+    #        col = positions[i] - 1
+    #        if matrixLine[row][col] == 1:  # если линии зависимы, то
+    #            arrayInfl.append(protectLines[i] + arrayInfl[i-j-1])
+    #            break
+    #arrayInfl[0] = AMOUNT_LINES
+    arrayInfl = [AMOUNT_LINES] * len(positions)
     return arrayInfl
 
 
@@ -156,14 +157,18 @@ def modelNka(nKA, arrayProtectConsumer, dictProtectLines=dictProtectLines):
     for positions in combinatPositions:
         positions.append(1) # для расчета линий, незащищаемых ни одной КА
         positions.sort()    # сортировка по уровням графа линий
+        #print(positions)
          # для каждой позиции находятся другие позиции КА, которые будут влиять на количесвто защищаемых ей линий
         dependLines = lineDepend(positions)
          # для каждой позиции рассчитываются соответсвующее количесвто защищаемых линий
         protectLines = lineProtect(dependLines, dictProtectLines)
+        #print(protectLines)
          # для каждой позиции рассчитывается количесвто линий, влияющих на работу КА
         influenceLines = lineInfluence(positions, protectLines)
+        #print(influenceLines)
          # для каждой позиции рассчитывается соответсвующее количесвто защищаемых потребителей
         consumers = consumerProtect(positions, arrayProtectConsumer)
+        #print(consumers)
          # расчет мат ожидания
         me = mathExpect(protectLines, influenceLines, consumers)
         if me < meMin:
@@ -181,3 +186,5 @@ def calculationFrom1toNka(amountKA, numberCustomersTP):
     for i in range(1, amountKA+1):
         arrayCalculatData.append(modelNka(i, functProtectConsumer(numberCustomersTP)))
     return arrayCalculatData
+
+#print(modelNka(17, functProtectConsumer([30, 20, 10, 5, 15, 40, 10, 30, 5, 10])))
